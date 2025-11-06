@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pratice</title>
+    <style>
+        body {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        const fid = 236673;
+        const walletAddress = "0x83e7308A636fb3E24B97c16a8F3738A8d1557f7d";
+
+async function tryGenerateSignature() {
+  try {
+    const apiUrl = `https://www.harmonybot.xyz/api/warplet/generateSignature/${fid}`;
+    const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(apiUrl);
+
+    const res = await fetch(proxy, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ walletAddress })
+    });
+
+    const text = await res.text();
+    console.log(`⏱️ [${new Date().toLocaleTimeString()}] Status:`, res.status);
+
+    if (res.ok && text.trim()) {
+      try {
+        const data = JSON.parse(text);
+        console.log("✅ Success:", data);
+        clearInterval(intervalId);
+      } catch {
+        console.log("⚠️ Response not valid JSON, retrying...");
+      }
+    } else {
+      console.log("❌ Failed or empty, retrying...");
+    }
+  } catch (err) {
+    console.error("Network error:", err);
+  }
+}
+tryGenerateSignature();
+    </script>
+</body>
+</html>

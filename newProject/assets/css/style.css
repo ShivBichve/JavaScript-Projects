@@ -1,0 +1,171 @@
+/* ------------------------------
+   Global Reset & Base
+------------------------------ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at top left, #e0f2ff, #f8f9fa);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: #212529;
+}
+
+/* ------------------------------
+   Header
+------------------------------ */
+header {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+  padding: 15px 0;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #0d6efd;
+}
+
+/* ------------------------------
+   Query Section
+------------------------------ */
+.query {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 20px 25px;
+  border-radius: 16px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.query:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* ------------------------------
+   Input Box
+------------------------------ */
+.box {
+  width: 220px;
+  border: 2px solid rgba(13, 110, 253, 0.3);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 10px 15px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: 0.3s ease;
+}
+
+.box:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(13, 110, 253, 0.4);
+  background: #fff;
+}
+
+/* ------------------------------
+   Buttons
+------------------------------ */
+.btn {
+  background: linear-gradient(135deg, #0d6efd, #007bff);
+  color: #fff !important;
+  font-weight: 500;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 25px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn:hover {
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+}
+
+/* ------------------------------
+   Main Containers
+------------------------------ */
+.parent {
+  min-height: 250px;
+}
+
+.child {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(15px);
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+  /* max-width: 900px; */
+  width: 100%;
+}
+
+/* ------------------------------
+   Options Section
+------------------------------ */
+.options {
+  margin-top: 40px;
+}
+
+.buttons {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  padding: 25px 30px;
+  border-radius: 20px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+}
+
+.buttons .btn {
+  min-width: 100px;
+}
+
+/* ------------------------------
+   Answer Display
+------------------------------ */
+.ans-parent {
+  margin-top: 30px;
+}
+
+.ans {
+  margin-top: 0px !important;
+  color: #0d6efd;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 2rem;
+  text-shadow: 0 2px 10px rgba(13, 110, 253, 0.3);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  padding: 18px;
+  /* border: 2px solid rgba(13, 110, 253, 0.3);
+  border-radius: 20px; */
+  margin-bottom: 40px;
+}
+
+/* ------------------------------
+   Responsive Design
+------------------------------ */
+@media (max-width: 768px) {
+  .query, .buttons {
+    flex-direction: column !important;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .box {
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .child {
+    padding: 25px;
+  }
+}

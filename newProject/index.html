@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+
+  <!-- main css -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+  
+  <header></header>
+  <main>
+    <div class="container mt-5">
+      <div class="query d-flex justify-content-center align-items-center mt-3 flex-wrap gap-3">
+        <!-- <label for="responce" class="h4 m-0 text- fw-bold">Enter the amount of inputs you want : </label> -->
+        <input type="number" class="box form-control" id="responce" placeholder="Input boxes" min="0">
+        <div>
+          <button class="btn responce-btn me-1" id="ok">Ok</button>
+          <button class="btn responce-btn" id="reset">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="parent p-5 d-flex justify-content-center align-items-center">
+        <div class="child d-flex rounded rounded-5 mt-4 row g-3">
+        </div>
+      </div>
+    </div>
+    <div class="options">
+      <div class="buttons d-flex justify-content-center align-items-center mt-5 gap-3 flex-wrap">
+        <input type="number" class="box form-control" id="range" placeholder="Random range">
+        <button class="btn shadow-lg" id="random">Random</button>
+        <button class="btn shadow-lg" id="sum">Sum</button>
+        <button class="btn shadow-lg" id="avg">Avg</button>
+        <button class="btn shadow-lg" id="min">Min</button>
+        <button class="btn shadow-lg" id="max">Max</button>
+        <button class="btn shadow-lg" id="clear">Clear</button>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center align-items-center ans-parent">
+      <h1 class="ans text-center mt-5">
+        
+      </h1>
+    </div>
+  </main>
+  <footer></footer>
+
+
+
+  <!-- bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- jquery -->
+
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <!-- main js -->
+  <script src="./assets/js/script.js"></script>
+</body>
+</html>
