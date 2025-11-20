@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Todo List</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                        linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 30%, #16213e 70%, #0f0f1e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.01) 0px, transparent 1px, transparent 40px),
+                repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.01) 0px, transparent 1px, transparent 40px);
+            pointer-events: none;
+        }
+
+        .container {
+            background: rgba(20, 20, 35, 0.8);
+            border-radius: 24px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 2px 8px rgba(99, 102, 241, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            padding: 45px;
+            max-width: 700px;
+            width: 100%;
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            z-index: 1;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                #6366f1 20%, 
+                #8b5cf6 50%, 
+                #ec4899 80%, 
+                transparent 100%);
+            border-radius: 24px 24px 0 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 45px;
+            position: relative;
+        }
+
+        .header h1 {
+            color: #f0f0f5;
+            font-size: 2.75rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #f0f0f5 0%, #a5a5c5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            text-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .header h1 i {
+            margin-right: 12px;
+            color: #6366f1;
+            -webkit-text-fill-color: #6366f1;
+            filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.5));
+        }
+
+        .header p {
+            color: #9ca3af;
+            font-size: 1.05rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        #todoInput {
+            flex: 1;
+            padding: 18px 24px;
+            background: rgba(10, 10, 20, 0.6);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 14px;
+            color: #e8e8f0;
+            font-size: 1.05rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.3),
+                0 1px 2px rgba(99, 102, 241, 0.1);
+        }
+
+        #todoInput:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(10, 10, 20, 0.8);
+            box-shadow: 
+                0 0 0 4px rgba(99, 102, 241, 0.15),
+                0 8px 24px rgba(99, 102, 241, 0.25),
+                inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        #todoInput::placeholder {
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        .btn {
+            padding: 18px 32px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            color: white;
+            box-shadow: 
+                0 4px 15px rgba(99, 102, 241, 0.4),
+                0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 8px 30px rgba(99, 102, 241, 0.5),
+                0 4px 12px rgba(139, 92, 246, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-add:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .btn-add i {
+            position: relative;
+            z-index: 2;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-add:hover i {
+            transform: rotate(180deg);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 35px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 24px 20px;
+            background: rgba(10, 10, 20, 0.5);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 
+                0 8px 24px rgba(99, 102, 241, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-item:hover::before {
+            opacity: 1;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover .stat-number {
+            transform: scale(1.15);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        #todoList {
+            list-style: none;
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        #todoList::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #todoList::-webkit-scrollbar-track {
+            background: rgba(10, 10, 20, 0.4);
+            border-radius: 10px;
+            margin: 4px 0;
+        }
+
+        #todoList::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 10px;
+            border: 2px solid rgba(10, 10, 20, 0.4);
+            transition: background 0.3s ease;
+        }
+
+        #todoList::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #8b5cf6 0%, #a855f7 100%);
+        }
+
+        .todo-item {
+            background: rgba(10, 10, 20, 0.5);
+            padding: 22px 24px;
+            margin-bottom: 14px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .todo-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .todo-item:hover {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateX(8px) scale(1.01);
+            box-shadow: 
+                -4px 0 16px rgba(99, 102, 241, 0.15),
+                0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .todo-item:hover::before {
+            opacity: 1;
+        }
+
+        .todo-item.completed {
+            opacity: 0.5;
+            background: rgba(10, 10, 20, 0.3);
+        }
+
+        .todo-item.completed:hover {
+            opacity: 0.6;
+            transform: translateX(4px);
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+
+        .checkbox-wrapper {
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            appearance: none;
+            background: rgba(10, 10, 20, 0.8);
+            border: 2.5px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:hover {
+            border-color: #6366f1;
+            box-shadow: 
+                0 0 0 4px rgba(99, 102, 241, 0.1),
+                0 0 12px rgba(99, 102, 241, 0.3);
+            transform: scale(1.1);
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-color: #10b981;
+            box-shadow: 
+                0 0 0 4px rgba(16, 185, 129, 0.2),
+                0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            color: white;
+            font-size: 14px;
+            animation: checkPop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes checkPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .todo-text {
+            flex: 1;
+            color: #e8e8f0;
+            font-size: 1.05rem;
+            word-break: break-word;
+            font-weight: 500;
+            line-height: 1.6;
+            background: transparent;
+            outline: none;
+            border: none;
+        }
+
+        .todo-text-edit {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(10, 10, 20, 0.8);
+            border: 2px solid #6366f1;
+            border-radius: 10px;
+            color: #e8e8f0;
+            font-size: 1.05rem;
+            font-weight: 500;
+            box-shadow: 
+                0 0 0 4px rgba(99, 102, 241, 0.15),
+                inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .todo-text-edit:focus {
+            outline: none;
+            box-shadow: 
+                0 0 0 4px rgba(99, 102, 241, 0.25),
+                0 4px 16px rgba(99, 102, 241, 0.3),
+                inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .action-btn:hover::before {
+            width: 100px;
+            height: 100px;
+        }
+
+        .action-btn i {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-edit {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            transform: translateY(-3px) rotate(5deg);
+            box-shadow: 
+                0 6px 20px rgba(59, 130, 246, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-edit:disabled {
+            background: rgba(107, 114, 128, 0.1);
+            color: #4b5563;
+            cursor: not-allowed;
+            border-color: rgba(107, 114, 128, 0.1);
+            opacity: 0.4;
+        }
+
+        .btn-edit:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            transform: translateY(-3px) rotate(-5deg);
+            box-shadow: 
+                0 6px 20px rgba(239, 68, 68, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-save {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .btn-save:hover {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 
+                0 6px 20px rgba(16, 185, 129, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-cancel {
+            background: rgba(156, 163, 175, 0.15);
+            color: #d1d5db;
+            border: 1px solid rgba(156, 163, 175, 0.2);
+        }
+
+        .btn-cancel:hover {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 
+                0 6px 20px rgba(107, 114, 128, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            margin-bottom: 24px;
+            opacity: 0.2;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .empty-state p {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .input-section {
+                flex-direction: column;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-item {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-tasks"></i> Todo List</h1>
+            <p>Organize your tasks with elegance & precision</p>
+        </div>
+
+        <div class="input-section">
+            <input type="text" id="todoInput" placeholder="What's on your agenda today?" />
+            <button class="btn btn-add" id="addBtn">
+                <i class="fas fa-plus"></i>
+                <span>Add Task</span>
+            </button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-number" id="totalTasks">0</span>
+                <span class="stat-label">Total Tasks</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="activeTasks">0</span>
+                <span class="stat-label">In Progress</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="completedTasks">0</span>
+                <span class="stat-label">Completed</span>
+            </div>
+        </div>
+
+        <ul id="todoList"></ul>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let todos = JSON.parse(localStorage.getItem('todos')) || [];
+            let editingId = null;
+
+            // Render all todos
+            function renderTodos() {
+                // $todoList.empty(); means this will remove all child elements from the selected element like ul
+                // const $todoList = $('#todoList');
+                // $todoList.empty();
+
+                const todoList = document.getElementById('todoList');
+                todoList.innerHTML = '';
+
+                if (todos.length === 0) {
+                    todoList.innerHTML += `
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-check"></i>
+                            <p>No tasks yet. Create one to get started!</p>
+                        </div>
+                    `;
+                    updateStats();
+                    return;
+                }
+
+                todos.forEach((todo, index) => {
+                    const isCompleted = todo.completed;
+                    const editDisabled = isCompleted ? 'disabled' : '';
+                    const editTitle = isCompleted ? 'Cannot edit completed tasks' : 'Edit';
+                    
+                    const todoItem = `
+                        <li class="todo-item ${isCompleted ? 'completed' : ''}" data-id="${index}">
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" ${isCompleted ? 'checked' : ''} class="todo-checkbox" />
+                            </div>
+
+                            <span class="todo-text">${todo.text}</span>
+
+                            <div class="todo-actions">
+                                <button class="action-btn btn-edit" title="${editTitle}" ${editDisabled}>
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn btn-delete" title="Delete">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </li>
+                    `;
+
+                    todoList.innerHTML += todoItem;
+                });
+
+                updateStats();
+            }
+
+            // Update statistics
+            function updateStats() {
+                const total = todos.length;
+                const completed = todos.filter(todo => todo.completed).length;
+                const active = total - completed;
+
+                $('#totalTasks').text(total);
+                $('#activeTasks').text(active);
+                $('#completedTasks').text(completed);
+            }
+
+            // Save to localStorage
+            function saveTodos() {
+                localStorage.setItem('todos', JSON.stringify(todos));
+            }
+
+            // Add new todo
+            function addTodo() {
+                const text = document.getElementById('todoInput').value.trim();
+                
+                if (text === '') {
+                    document.getElementById('todoInput').focus();
+                    return;
+                }
+
+                todos.push({
+                    text: text,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                });
+
+                document.getElementById('todoInput').value = '';
+                saveTodos();
+                renderTodos();
+            }
+
+            // Toggle todo completion
+            function toggleTodo(index) {
+                todos[index].completed = !todos[index].completed;
+                saveTodos();
+                renderTodos();
+            }
+
+            // Delete todo
+            function deleteTodo(index) {
+                todos.splice(index, 1);
+                saveTodos();
+                renderTodos();
+            }
+
+            // Edit todo (only if not completed)
+            // function editTodo(index) {
+            //     if (editingId !== null || todos[index].completed) return;
+                
+            //     editingId = index;
+
+            //     const $todoItem = $(`.todo-item[data-id="${index}"]`);
+            //     const currentText = todos[index].text;
+
+            //     $todoItem.find('.todo-text').replaceWith(
+            //         `<input type="text" class="todo-text-edit" value="${escapeHtml(currentText)}" />`
+            //     );
+
+            //     $todoItem.find('.todo-actions').html(`
+            //         <button class="action-btn btn-save" title="Save">
+            //             <i class="fas fa-check"></i>
+            //         </button>
+            //         <button class="action-btn btn-cancel" title="Cancel">
+            //             <i class="fas fa-times"></i>
+            //         </button>
+            //     `);
+
+            //     $todoItem.find('.todo-text-edit').focus().select();
+            // }
+
+            function editTodo(index) {
+                if (editingId !== null || todos[index].completed) return;
+
+                editingId = index;
+
+                // Select the todo item using dataset selector
+                const todoItem = document.querySelector(`.todo-item[data-id="${index}"]`);
+                const currentText = todos[index].text;
+
+                // Find the .todo-text element
+                const todoTextElem = todoItem.querySelector('.todo-text');
+
+                // Create an input to replace it
+                const input = document.createElement('input');
+                input.type = "text";
+                input.className = "todo-text-edit";
+                input.value = currentText;
+
+                // Replace the element
+                todoTextElem.replaceWith(input);
+
+                // Replace actions
+                const actions = todoItem.querySelector('.todo-actions');
+                actions.innerHTML = `
+                    <button class="action-btn btn-save" title="Save">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="action-btn btn-cancel" title="Cancel">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+
+                // Focus input
+                input.focus();
+                input.select();
+            }
+
+            // Save edited todo
+            function saveEdit(index) {
+                const todoItem = document.querySelector(`.todo-item[data-id="${index}"]`);
+
+                const editInput = todoItem.querySelector('.todo-text-edit');
+
+                if(!editInput) return;
+
+                const newText = editInput.value.trim();
+
+                if (newText === '') {
+                    cancelEdit();
+                    return;
+                }
+
+                todos[index].text = newText;
+                editingId = null;
+                saveTodos();
+                renderTodos();
+            }
+
+            // Cancel edit
+            function cancelEdit() {
+                editingId = null;
+                renderTodos();
+            }
+
+            // Event: Add button click
+            document.getElementById('addBtn').addEventListener('click', addTodo);
+
+            // Event: Enter key in input
+            $('#todoInput').keypress(function(e) {
+                if (e.which === 13) {
+                    addTodo();
+                }
+            });
+            
+            // Event: Checkbox toggle
+            document.addEventListener('change', function(e) {
+                const checkbox = e.target.closest('.todo-checkbox');
+                if (checkbox) {
+                    const todoItem = checkbox.closest('.todo-item');
+                    const index = todoItem.dataset.id;
+                    toggleTodo(index);
+                }
+            });
+
+            // Event: Delete button
+            document.addEventListener('click', function(e) {
+                const deleteBtn = e.target.closest('.btn-delete');
+                if (deleteBtn) {
+                    const todoItem = deleteBtn.closest('.todo-item');
+                    const index = todoItem.dataset.id;
+                    deleteTodo(index);
+                }
+            });
+
+            // Event: Edit button (disabled for completed tasks)
+            document.addEventListener('click', function (e) {
+                // closest try to find the nearest parent element that matches the selector
+                // useful when the click is on an icon inside the button
+                const editBtn = e.target.closest('.btn-edit');
+                if (editBtn && !editBtn.disabled) {
+                    const todoItem = editBtn.closest('.todo-item');
+                    const index = todoItem.getAttribute('data-id');
+                    editTodo(index);
+                }
+            });
+
+            // Event: Save edit button
+            document.addEventListener('click', function(e) {
+                // if (e.target.classList.contains('btn-save')) {
+                //     const todoItem = e.target.closest('.todo-item');
+                //     const index = todoItem.getAttribute('data-id');
+                //     saveEdit(index);
+                // }
+
+                const saveBtn = e.target.closest('.btn-save');
+                if (saveBtn && !saveBtn.disabled) {
+                    const todoItem = saveBtn.closest('.todo-item');
+                    if (!todoItem) return;                     // guard
+                    const idx = Number(todoItem.dataset.id);   // convert to number
+                    if (Number.isNaN(idx)) return;
+                    saveEdit(idx);
+                }
+            });
+
+            // Event: Cancel edit button
+            document.addEventListener('click', function(e) {
+                // if (e.target.classList.contains('btn-cancel')) {
+                //     cancelEdit();
+                // }
+
+                const cancelBtn = e.target.closest('.btn-cancel');
+                if (cancelBtn) {
+                    cancelEdit();
+                    return;
+                }
+            });
+            
+            // Event: Save edit button
+            document.addEventListener('click', function (e) {
+
+                const saveBtn = e.target.closest('.btn-save');
+                if (saveBtn) {
+                    const todoItem = saveBtn.closest('.todo-item');
+                    const index = todoItem.dataset.id;
+                    saveEdit(index);
+                }
+            });
+
+            // Event: Cancel edit button
+            document.addEventListener('click', function (e) {
+                const cancelBtn = e.target.closest('.btn-cancel');
+                if (cancelBtn) {
+                    cancelEdit();
+                }
+            });
+
+            // Initial render
+            renderTodos();
+        });
+    </script>
+</body>
+</html>
